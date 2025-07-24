@@ -1,5 +1,5 @@
 module main
-author unknown
+author MinhKhanh210
 version 1 0 
 description ''
 
@@ -37,7 +37,7 @@ forever {
 
 
 module MKE_M01_LED_MODULE
-author MinhKhanh614
+author MinhKhanh210
 version 1 0 
 choices pinListLED D9 D10 D11 D12 D13 
 description ''

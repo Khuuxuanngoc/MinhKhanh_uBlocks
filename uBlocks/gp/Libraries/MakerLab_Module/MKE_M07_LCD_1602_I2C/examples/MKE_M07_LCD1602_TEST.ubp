@@ -2,15 +2,34 @@ module main
 author unknown
 version 1 0 
 description ''
+variables _LCD2004_LINE3 _LCD2004_LINE4 
 
-script 50 50 {
+script 109 50 {
 whenStarted
-LCD1602_write 'Test S08' 1
-forever {
-  LCD1602_write ('[data:join]' 'Values: ' (analogReadOp 3) ' ') 2
-  sayIt ('[data:join]' 'Values: ' (analogReadOp 3) ' ')
-  waitMillis 200
+LCD_write_at_r_and_c 'Test M07' 1 1
+LCD1602_write 'Wait' 2
+for i ('[data:range]' 4 0) {
+  LCD1602_write_field ('[data:join]' i 's') 2 6 10
+  waitMillis 1000
 }
+LCD1602_clear
+for i 2 {
+  for j 16 {
+    LCD_write_at_r_and_c (random 1 10) j i
+  }
+}
+for i 2 {
+  for j 16 {
+    LCD_write_at_r_and_c ' ' j i
+  }
+}
+LCD_write_at_r_and_c 'Test Done' 1 1
+LCD1602_write 'Wait' 2
+for i ('[data:range]' 4 0) {
+  LCD_write_at_r_and_c ('[data:join]' i 's to clear') 6 2
+  waitMillis 1000
+}
+LCD1602_clear
 }
 
 
@@ -107,6 +126,8 @@ to LCD1602_write_field string line start end {
         char = 32
       }
       atPut ((start - 1) + i) bytes char
+    } else {
+      atPut ((start - 1) + i) bytes char
     }
   }
   LCD1602_write_buffer line
@@ -179,3 +200,20 @@ to 're-initialize' {
   _LCD1602_ADDR = 0
 }
 
+
+module 'Sensor Primitives' Input
+author MicroBlocks
+version 1 1 
+tags tilt acceleration light sensor capacitive button 
+description 'Provides blocks to read tilt in the three axes, acceleration, temperature and light level. Many boards come with this particular set of sensors, such as the micro:bit, the Circuit Playground Express, the Calliope or the Citilab ED1.'
+
+  spec 'r' '[sensors:tiltX]' 'tilt x'
+  spec 'r' '[sensors:tiltY]' 'tilt y'
+  spec 'r' '[sensors:tiltZ]' 'tilt z'
+  spec 'r' '[display:lightLevel]' 'light level'
+  spec 'r' '[sensors:temperature]' 'temperature (°C)'
+  space
+  spec 'r' '[sensors:touchRead]' 'capacitive sensor _' 'num' 1
+  space
+  spec ' ' '[sensors:i2cSetClockSpeed]' 'set i2c clock speed _' 'num' 400000
+  spec ' ' '[sensors:i2cSetPins]' 'set i2c pins SDA _ SCL _' 'num num' 8 9

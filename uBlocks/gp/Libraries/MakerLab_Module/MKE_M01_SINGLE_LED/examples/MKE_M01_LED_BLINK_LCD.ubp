@@ -5,12 +5,56 @@ description ''
 
 script 50 50 {
 whenStarted
-LCD1602_write 'Test S08' 1
 forever {
-  LCD1602_write ('[data:join]' 'Values: ' (analogReadOp 3) ' ') 2
-  sayIt ('[data:join]' 'Values: ' (analogReadOp 3) ' ')
-  waitMillis 200
+  digitalWriteOp 3 true
+  LCD1602_write ('[data:join]' 'LED ' 'ON ' '  ') 1
+  sayIt ('[data:join]' 'LED ' 'ON ' '  ')
+  waitMillis 500
+  digitalWriteOp 3 false
+  LCD1602_write ('[data:join]' 'LED ' 'OFF ' ' ') 1
+  sayIt ('[data:join]' 'LED ' 'OFF ' ' ')
+  waitMillis 500
 }
+}
+
+script 50 385 {
+to LCD1602_clear {}
+}
+
+script 50 927 {
+to LCD1602_isConnected {}
+}
+
+script 50 1015 {
+to LCD1602_write {}
+}
+
+script 50 1160 {
+to LCD1602_write_buffer {}
+}
+
+script 50 1875 {
+to LCD1602_write_field {}
+}
+
+script 50 3374 {
+to LCD_write_at_r_and_c {}
+}
+
+script 50 3542 {
+to '_LCD1602 init' {}
+}
+
+script 50 4650 {
+to '_LCD1602 send' {}
+}
+
+script 50 5285 {
+to '_LCD1602 toggle enable' {}
+}
+
+script 50 5616 {
+to 're-initialize' {}
 }
 
 
@@ -87,6 +131,7 @@ to LCD1602_write_field string line start end {
     end = 20
   }
   string = ('[data:join]' '' string)
+  sayIt string (size string)
   if (line == 1) {
     bytes = _LCD1602_LINE1
   } (line == 2) {
@@ -99,6 +144,7 @@ to LCD1602_write_field string line start end {
   waitUntil (((millisOp) - _LCD1602_LOCK_MSECS) > 500)
   _LCD1602_LOCK_MSECS = (millisOp)
   local 'count' ((end - start) + 1)
+  sayIt bytes (size bytes)
   for i count {
     local 'char' 32
     if (i <= (size string)) {
@@ -106,6 +152,8 @@ to LCD1602_write_field string line start end {
       if (char > 127) {
         char = 32
       }
+      atPut ((start - 1) + i) bytes char
+    } else {
       atPut ((start - 1) + i) bytes char
     }
   }
@@ -179,3 +227,20 @@ to 're-initialize' {
   _LCD1602_ADDR = 0
 }
 
+
+module 'Sensor Primitives' Input
+author MicroBlocks
+version 1 1 
+tags tilt acceleration light sensor capacitive button 
+description 'Provides blocks to read tilt in the three axes, acceleration, temperature and light level. Many boards come with this particular set of sensors, such as the micro:bit, the Circuit Playground Express, the Calliope or the Citilab ED1.'
+
+  spec 'r' '[sensors:tiltX]' 'tilt x'
+  spec 'r' '[sensors:tiltY]' 'tilt y'
+  spec 'r' '[sensors:tiltZ]' 'tilt z'
+  spec 'r' '[display:lightLevel]' 'light level'
+  spec 'r' '[sensors:temperature]' 'temperature (°C)'
+  space
+  spec 'r' '[sensors:touchRead]' 'capacitive sensor _' 'num' 1
+  space
+  spec ' ' '[sensors:i2cSetClockSpeed]' 'set i2c clock speed _' 'num' 400000
+  spec ' ' '[sensors:i2cSetPins]' 'set i2c pins SDA _ SCL _' 'num num' 4 5

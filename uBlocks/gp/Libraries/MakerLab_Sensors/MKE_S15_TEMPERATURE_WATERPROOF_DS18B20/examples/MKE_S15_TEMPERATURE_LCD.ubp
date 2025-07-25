@@ -3,12 +3,13 @@ author unknown
 version 1 0 
 description ''
 
-script 56 50 {
+script 56 54 {
 whenStarted
 forever {
   LCD1602_write ('[data:join]' 'Celcius: ' ('[data:convertType]' (S15_WaterTemp 'Celcius' 3) 'string') ' ') 1
   LCD1602_write ('[data:join]' 'Fahrenheit: ' ('[data:convertType]' (S15_WaterTemp 'Fahrenheit' 3) 'string') ' ') 2
-  waitMillis 100
+  sayIt ('[data:join]' 'Celcius: ' ('[data:convertType]' (S15_WaterTemp 'Celcius' 3) 'string') ' ') ('[data:join]' 'Fahrenheit: ' ('[data:convertType]' (S15_WaterTemp 'Fahrenheit' 3) 'string') ' ')
+  waitMillis 200
 }
 }
 
@@ -86,7 +87,6 @@ to LCD1602_write_field string line start end {
     end = 20
   }
   string = ('[data:join]' '' string)
-  sayIt string (size string)
   if (line == 1) {
     bytes = _LCD1602_LINE1
   } (line == 2) {
@@ -99,7 +99,6 @@ to LCD1602_write_field string line start end {
   waitUntil (((millisOp) - _LCD1602_LOCK_MSECS) > 500)
   _LCD1602_LOCK_MSECS = (millisOp)
   local 'count' ((end - start) + 1)
-  sayIt bytes (size bytes)
   for i count {
     local 'char' 32
     if (i <= (size string)) {
@@ -107,6 +106,8 @@ to LCD1602_write_field string line start end {
       if (char > 127) {
         char = 32
       }
+      atPut ((start - 1) + i) bytes char
+    } else {
       atPut ((start - 1) + i) bytes char
     }
   }
@@ -181,7 +182,7 @@ to 're-initialize' {
 }
 
 
-module S15_Temperature
+module MKE_S15_DS18B20_TEMPERATURE
 author GiaAn
 version 1 0 
 choices deg Celcius Fahrenheit 

@@ -3,9 +3,9 @@ author unknown
 version 1 0 
 description ''
 
-script 50 50 {
+script 54 54 {
 whenStarted
-LCD1602_write 'Test S08' 1
+LCD1602_write 'Test M04' 1
 forever {
   LCD1602_write ('[data:join]' 'Values: ' (analogReadOp 3) ' ') 2
   sayIt ('[data:join]' 'Values: ' (analogReadOp 3) ' ')
@@ -106,6 +106,8 @@ to LCD1602_write_field string line start end {
       if (char > 127) {
         char = 32
       }
+      atPut ((start - 1) + i) bytes char
+    } else {
       atPut ((start - 1) + i) bytes char
     }
   }
